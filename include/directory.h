@@ -7,7 +7,17 @@
   Structure de données représentant un annuaire.
   Son contenu est détaillé dans directory.c.
 */
-struct dir;
+typedef struct dir dir;
+
+struct dir
+{
+  //tableau de contacts
+  struct contact **C_table;
+  //taille du tableau pour reference
+  uint32_t size;
+  //compteur count pour 
+  uint32_t count;
+};
 
 /*
   Crée un nouvel annuaire contenant _len_ listes vides.
@@ -20,7 +30,7 @@ extern struct dir *dir_create(uint32_t len);
   numéro est remplacé et la fonction retourne une copie de l'ancien numéro.
   Sinon, la fonction retourne NULL.
 */
-extern char *dir_insert(struct dir *dir, const char *name, const char *num);
+extern char *dir_insert(struct dir *dir,  char *name,  char *num);
 
 /*
   Retourne le numéro associé au nom _name_ dans l'annuaire _dir_. Si aucun
