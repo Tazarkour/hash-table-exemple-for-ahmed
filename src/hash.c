@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#define CAPACITY 20000
+#define CAPACITY 50000
 
 uint32_t hash(const char *str)
 {
@@ -13,7 +13,7 @@ uint32_t hash(const char *str)
 
     for (;i <len ; i++)
     {
-    	value= 37*value + str[i];
+    	value= 33*value + str[i];
 
     	value= value%CAPACITY;
 

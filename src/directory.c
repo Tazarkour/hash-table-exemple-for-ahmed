@@ -20,9 +20,6 @@ struct dir *dir_create(uint32_t len)
     }
     return directory;
 };
-
-
-
 /*
   Insère un nouveau contact dans l'annuaire _dir_, construit à partir des nom et
   numéro passés en paramètre. Si il existait déjà un contact du même nom, son
@@ -31,7 +28,7 @@ struct dir *dir_create(uint32_t len)
 */
 char *dir_insert(struct dir *dir,  char *name,  char *num)
 {
-    struct contact * contact_item = creation_contact(name, num);
+   struct contact * contact_item = creation_contact(name, num);
     uint32_t index=hash(name);
 
 
@@ -68,12 +65,27 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
      }
      else
      { 
-      printf ("Error : Collision detected, two indexes have same ASCII code but diffrent names\n");
+      struct contact *cont;
+      cont=dir->C_table[index];
+      while(cont->suivant!=NULL)
+      {
+        if (strcmp(cont->suivant->nom,contact_item->nom)==0)
+      {
+        char * ancien_numero=cont->suivant->numero;
+
+        cont->suivant->numero=contact_item->numero;
+        return  ancien_numero;
+      }
+        cont=cont->suivant;
+        
+      }
+      
+      cont->suivant=contact_item;
+      dir->count++;
       return NULL;
       }
     }
-
-   
+    return NULL;  
 };
 
 /*
@@ -82,12 +94,14 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
 */
 const char *dir_lookup_num(struct dir *dir, const char *name)
 {
-    uint32_t index=hash(name);
+   uint32_t index=hash(name);
     struct contact *contact_item= dir->C_table[index];
-    if (contact_item != NULL) {
+    while (contact_item != NULL) {
         if (strcmp(contact_item->nom, name) == 0)
             return contact_item->numero;
+        else contact_item=contact_item->suivant;  
     }
+    printf ("Nom Inexistant !\n");
     return NULL;
 };
 
@@ -99,8 +113,23 @@ void dir_delete(struct dir *dir, const char *name)
 {
     uint32_t index=hash(name);
     struct contact *contact_item=dir->C_table[index];
-    if (contact_item != NULL)
-    free_contact(contact_item);
+    struct contact *contact_pres;
+    if (strcmp(contact_item->nom,name)==0)
+      {
+        dir->C_table[index]=dir->C_table[index]->suivant;
+        free_contact(contact_item);
+        contact_item= NULL;
+      }
+    while (contact_item!=NULL)
+    {
+      if (strcmp(contact_item->nom,name)==0)
+      {
+        contact_pres->suivant=contact_item->suivant;
+        free_contact(contact_item);
+      }
+      contact_pres=contact_item;
+      contact_item=contact_item->suivant;
+    }
 };
 
 /*
@@ -108,26 +137,44 @@ void dir_delete(struct dir *dir, const char *name)
 */
 void dir_free(struct dir *dir)
 {
-    for (uint32_t i=0; i<dir->size; i++) 
+   for (uint32_t i=0; i<dir->size; i++) 
     {
         struct contact* contact_item = dir->C_table[i];
-        if (contact_item != NULL)
-        free_contact(contact_item);
+        while (dir->C_table[i]!=NULL)
+        {
+          while (contact_item!=NULL)
+          {
+            dir->C_table[i]=contact_item->suivant;
+            free_contact(contact_item);
+            contact_item=dir->C_table[i];
+          }
+          contact_item=dir->C_table[i];
+
+        }
     }
  
     free(dir->C_table);
     free(dir);
+    dir=NULL;
 };
 /*
   Affiche sur la sortie standard le contenu de l'annuaire _dir_.
 */
 void dir_print(struct dir *dir)
 {
-    printf("\n-------------------\n");
-    for (uint32_t i=0; i<dir->size; i++) {
-        if (dir->C_table[i]) {
-            printf("Index:%d, Nom:%s, Numéro:%s\n", i, dir->C_table[i]->nom, dir->C_table[i]->numero);
-        }
+    struct contact * parc;
+  printf("\n-------------------\n");
+  for (uint32_t i=0;i<dir->size;i++)
+  {
+
+    parc=dir->C_table[i];
+    while (parc!=NULL)
+    {
+    printf("Index:%d, Nom:%s, Numéro:%s\n", i, parc->nom, parc->numero);
+    parc=parc->suivant;
     }
-    printf("----------------------\n");
+
+  
+  }
+  printf("\n-------------------\n");
 };
