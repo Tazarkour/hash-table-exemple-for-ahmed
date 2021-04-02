@@ -6,15 +6,7 @@
 */
 typedef struct contact contact;
 
-struct contact
-{
-  //nom=key to navigate hash
-  char *nom;
-  //numero est la valeur de la case
-  char *numero;
 
-  struct contact * suivant;
-};
 
 struct contact* creation_contact (char* name, char* num);
 
