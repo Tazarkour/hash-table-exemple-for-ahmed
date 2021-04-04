@@ -172,7 +172,7 @@ struct  dir * redim (struct dir * dir)
       while (cont!=NULL)
       { 
 
-        dir_insert(new_dir,cont->nom,cont->numero);
+        dir_insert_redim(new_dir,cont->nom,cont->numero);
         cont=cont->suivant;
 
 
@@ -191,7 +191,7 @@ struct  dir * redim (struct dir * dir)
       cont=dir->C_table[i];
       while (cont!=NULL)
       {
-        dir_insert(new_dir,cont->nom,cont->numero);
+        dir_insert_redim(new_dir,cont->nom,cont->numero);
         cont=cont->suivant;
       }
     }
