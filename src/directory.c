@@ -88,6 +88,53 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
     return NULL;  
 };
 
+
+struct  dir * redim (struct dir * dir)
+{
+  uint32_t i;
+  float count;
+  count=(float)dir->count;
+  if (count < ((dir->size*3)/20))
+  {
+    uint32_t size=dir->size/2;
+    struct contact * cont;
+    struct dir * new_dir=dir_create(size);
+    for (i=0;i<dir->size;i++)
+    {
+      cont=dir->C_table[i];
+      while (cont!=NULL)
+      { 
+
+        dir_insert(new_dir,cont->nom,cont->numero);
+        cont=cont->suivant;
+
+
+      }
+    }
+    return new_dir;
+
+  }
+  if (count > ((dir->size*2)/3))
+  {
+    uint32_t size=dir->size*2;
+    struct contact * cont;
+    struct dir * new_dir=dir_create(size);
+    for (i=0;i<dir->size;i++)
+    {
+      cont=dir->C_table[i];
+      while (cont!=NULL)
+      {
+        dir_insert(new_dir,cont->nom,cont->numero);
+        cont=cont->suivant;
+      }
+    }
+    return new_dir;
+
+  }
+  return dir;
+
+}
+
 /*
   Retourne le numéro associé au nom _name_ dans l'annuaire _dir_. Si aucun contact
   ne correspond, retourne NULL.
