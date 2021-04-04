@@ -20,6 +20,68 @@ struct dir *dir_create(uint32_t len)
     }
     return directory;
 };
+
+void dir_insert_redim(struct dir *dir,  char *name,  char *num)
+{
+   struct contact * contact_item = creation_contact(name, num);
+    uint32_t index=hash(name);
+
+
+    struct contact * contact_test=dir->C_table[index];
+    if (contact_test==NULL)
+    {
+      if (dir->size==dir->count)
+      {
+        printf ("Error: directory full\n");
+        free_contact (contact_item);
+      }
+      else
+      dir->C_table[index] = contact_item; 
+      dir->count++;
+       dir=redim (dir);
+    }
+    else
+    {
+      if (strcmp(dir->C_table[index]->nom,name)==0)
+      {  
+        if (dir->size==dir->count)
+        {
+          printf ("Error: directory full\n");
+          free_contact (contact_item);
+        }
+        else
+       {
+        char *ancien_numero;
+        strcpy(ancien_numero,dir->C_table[index]->numero);
+        strcpy(dir->C_table[index]->numero,num); 
+        dir->count++;
+        dir=redim (dir);
+       }
+     }
+     else
+     { 
+      struct contact *cont;
+      cont=dir->C_table[index];
+      while(cont->suivant!=NULL)
+      {
+        if (strcmp(cont->suivant->nom,contact_item->nom)==0)
+      {
+        char * ancien_numero=cont->suivant->numero;
+        cont->suivant->numero=contact_item->numero;
+        dir=redim (dir);
+      }
+        cont=cont->suivant;
+        
+      }
+      
+      cont->suivant=contact_item;
+      dir->count++;
+      dir=redim (dir);
+      }
+    }
+    dir=redim (dir); 
+};
+
 /*
   Insère un nouveau contact dans l'annuaire _dir_, construit à partir des nom et
   numéro passés en paramètre. Si il existait déjà un contact du même nom, son
@@ -43,6 +105,7 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
       else
       dir->C_table[index] = contact_item; 
       dir->count++;
+      redim (dir);
        return NULL;
     }
     else
@@ -60,6 +123,7 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
         strcpy(ancien_numero,dir->C_table[index]->numero);
         strcpy(dir->C_table[index]->numero,num); 
         dir->count++;
+        redim (dir);
         return ancien_numero;
        }
      }
@@ -74,6 +138,7 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
         char * ancien_numero=cont->suivant->numero;
 
         cont->suivant->numero=contact_item->numero;
+        redim (dir);
         return  ancien_numero;
       }
         cont=cont->suivant;
@@ -82,9 +147,11 @@ char *dir_insert(struct dir *dir,  char *name,  char *num)
       
       cont->suivant=contact_item;
       dir->count++;
+      redim (dir);
       return NULL;
       }
     }
+    redim (dir);
     return NULL;  
 };
 

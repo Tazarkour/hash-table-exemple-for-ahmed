@@ -55,6 +55,7 @@ extern void dir_free(struct dir *dir);
 extern void dir_print(struct dir *dir);
 
 
-struct  dir * redim (struct dir * dir)
+struct  dir * redim (struct dir * dir);
 
+void dir_insert_redim(struct dir *dir,  char *name,  char *num);
 #endif /* _DIRECTORY_H_ */
